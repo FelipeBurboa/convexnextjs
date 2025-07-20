@@ -13,7 +13,7 @@ export function NotesPage() {
   return (
     <div className="container xl:max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">My Notes</h1>
+        <h1 className="text-2xl font-bold">Mis Notas</h1>
         <div className="flex gap-2">
           <AIChatButton />
           <CreateNoteButton />
@@ -39,7 +39,7 @@ function EmptyView() {
   return (
     <div className="text-center py-10">
       <p className="text-muted-foreground">
-        No notes yet. Create your first note!
+        No hay notas. Crea tu primera nota!
       </p>
     </div>
   );
