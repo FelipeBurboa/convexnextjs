@@ -1,37 +1,39 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "convex/react";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { api } from "../../../../convex/_generated/api";
 
 const noteFormSchema = z.object({
   title: z.string().min(1, {
-    message: "Title cannot be empty.",
+    message: "El título no puede estar vacío.",
   }),
   body: z.string().min(1, {
-    message: "Body cannot be empty.",
+    message: "El cuerpo no puede estar vacío.",
   }),
 });
 
@@ -42,7 +44,7 @@ export function CreateNoteButton() {
     <>
       <Button onClick={() => setDialogOpen(true)}>
         <Plus />
-        Create Note
+        Crear Nota
       </Button>
       <CreateNoteDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </>
@@ -55,6 +57,8 @@ interface CreateNoteDialogProps {
 }
 
 function CreateNoteDialog({ open, onOpenChange }: CreateNoteDialogProps) {
+  const createNote = useMutation(api.notes.createNote);
+
   const form = useForm<z.infer<typeof noteFormSchema>>({
     resolver: zodResolver(noteFormSchema),
     defaultValues: {
@@ -63,18 +67,31 @@ function CreateNoteDialog({ open, onOpenChange }: CreateNoteDialogProps) {
     },
   });
 
+  const isSubmitting = form.formState.isSubmitting;
+
   async function onSubmit(values: z.infer<typeof noteFormSchema>) {
-    // TODO: Create note from form input
+    try {
+      await createNote({
+        title: values.title,
+        body: values.body,
+      });
+      toast.success("Nota creada exitosamente!");
+      form.reset();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error creating note:", error);
+      toast.error("Error al crear la nota. Por favor, intenta nuevamente.");
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Note</DialogTitle>
+          <DialogTitle>Crear Nueva Nota</DialogTitle>
           <DialogDescription>
-            Fill in the details for your new note. Click save when you&apos;re
-            done.
+            Llena los detalles para tu nueva nota. Haz clic en guardar cuando
+            hayas terminado.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -84,7 +101,7 @@ function CreateNoteDialog({ open, onOpenChange }: CreateNoteDialogProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>Título</FormLabel>
                   <FormControl>
                     <Input placeholder="Note title" {...field} />
                   </FormControl>
@@ -97,7 +114,7 @@ function CreateNoteDialog({ open, onOpenChange }: CreateNoteDialogProps) {
               name="body"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Body</FormLabel>
+                  <FormLabel>Cuerpo</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Note body" {...field} />
                   </FormControl>
@@ -106,7 +123,9 @@ function CreateNoteDialog({ open, onOpenChange }: CreateNoteDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Guardando..." : "Guardar"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

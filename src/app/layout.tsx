@@ -29,7 +29,7 @@ export default function RootLayout({
       <html lang="es" suppressHydrationWarning>
         <body className={`${geistSans.className} antialiased`}>
           <ConvexClientProvider>{children}</ConvexClientProvider>
-          <Toaster position="top-right" />
+          <Toaster position="bottom-center" closeButton />
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
