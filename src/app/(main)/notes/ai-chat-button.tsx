@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { useAuthToken } from "@convex-dev/auth/react";
 import { DefaultChatTransport, UIMessage } from "ai";
-import { Bot, Expand, Minimize, Send, Trash, X } from "lucide-react";
+import { Bot, Expand, Minimize, Search, Send, Trash, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 // For HTTP requests using Convex
@@ -47,7 +47,6 @@ const initialMessages: UIMessage[] = [
 
 function AIChatBox({ open, onClose }: AIChatBoxProps) {
   const [input, setInput] = useState("");
-
   const [isExpanded, setIsExpanded] = useState(false);
 
   //For HTTP requests using Convex since it doesn't use Convex directly
@@ -61,6 +60,7 @@ function AIChatBox({ open, onClose }: AIChatBoxProps) {
       },
     }),
     messages: initialMessages,
+    maxSteps: 3,
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -73,13 +73,13 @@ function AIChatBox({ open, onClose }: AIChatBoxProps) {
     }
   }, [open, messages]);
 
-  function onSubmit(e: React.FormEvent) {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !isProcessing) {
       sendMessage({ text: input });
       setInput("");
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -141,6 +141,7 @@ function AIChatBox({ open, onClose }: AIChatBoxProps) {
           <ChatMessage key={message.id} message={message} />
         ))}
         {status === "submitted" && lastMessageIsUser && <Loader />}
+        {status === "streaming" && lastMessageIsUser && <ToolSearchIndicator />}
         {status === "error" && <ErrorMessage />}
         <div ref={messagesEndRef} />
       </div>
@@ -209,6 +210,15 @@ function Loader() {
       <div className="bg-primary size-1.5 animate-pulse rounded-full" />
       <div className="bg-primary size-1.5 animate-pulse rounded-full delay-150" />
       <div className="bg-primary size-1.5 animate-pulse rounded-full delay-300" />
+    </div>
+  );
+}
+
+function ToolSearchIndicator() {
+  return (
+    <div className="mr-auto flex max-w-[80%] items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm">
+      <Search className="text-primary size-4 animate-pulse" />
+      <span className="text-muted-foreground">🔍 Buscando en tus notas...</span>
     </div>
   );
 }
