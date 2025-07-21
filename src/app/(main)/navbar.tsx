@@ -19,7 +19,7 @@ export function Navbar() {
             height={32}
             className="rounded"
           />
-          Smart Notes
+          Smart Notitas
         </Link>
         <div className="flex items-center gap-2">
           <ModeToggle />

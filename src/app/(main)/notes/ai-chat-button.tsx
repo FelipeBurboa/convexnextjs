@@ -199,6 +199,9 @@ function ChatMessage({ message }: ChatMessageProps) {
         {currentStep?.type === "text" && (
           <Markdown>{currentStep.text}</Markdown>
         )}
+        {currentStep?.type === "tool-invocation" && (
+          <div className="italic animate-pulse">Buscando en tus notas...</div>
+        )}
       </div>
     </div>
   );

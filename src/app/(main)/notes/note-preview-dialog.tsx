@@ -15,6 +15,7 @@ import { api } from "../../../../convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 interface NotePreviewDialogProps {
   note: Doc<"notes">;
@@ -52,7 +53,8 @@ export function NotePreviewDialog({ note }: NotePreviewDialogProps) {
           <DialogTitle>{note.title}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 whitespace-pre-wrap">{note.body}</div>
-        <DialogFooter className="mt-6">
+        <Separator />
+        <DialogFooter className="mt-2">
           <Button
             variant="destructive"
             className="gap-2"
