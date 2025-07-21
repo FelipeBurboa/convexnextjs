@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { embedMany } from "ai";
+import { embed, embedMany } from "ai";
 
 const embeddingModel = openai.embedding("text-embedding-3-small");
 
@@ -10,6 +10,7 @@ function generateChunks(input: string) {
     .filter(Boolean);
 }
 
+//Genera embeddings para un texto completo
 export async function generateEmbeddings(
   value: string
 ): Promise<Array<{ content: string; embedding: number[] }>> {
@@ -24,4 +25,14 @@ export async function generateEmbeddings(
     content: chunks[index],
     embedding,
   }));
+}
+
+//Genera un solo embedding para un valor
+export async function generateEmbedding(value: string): Promise<number[]> {
+  const { embedding } = await embed({
+    model: embeddingModel,
+    value,
+  });
+
+  return embedding;
 }
