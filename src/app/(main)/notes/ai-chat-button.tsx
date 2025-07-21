@@ -11,7 +11,7 @@ import { Bot, Expand, Minimize, Search, Send, Trash, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 // For HTTP requests using Convex
-const convexSiteUrl = "https://quixotic-meerkat-454.convex.site";
+const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL!;
 
 export function AIChatButton() {
   const [chatOpen, setChatOpen] = useState(false);
